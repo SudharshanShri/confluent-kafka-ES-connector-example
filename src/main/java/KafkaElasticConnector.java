@@ -17,37 +17,22 @@ public class KafkaElasticConnector {
         sink.start(props,null);
         Collection<SinkRecord> records;
 
-        //ElasticsearchSinkConnectorConfig es=new ElasticsearchSinkConnectorConfig(props);
-        //System.out.println(CONFIG.toRst());
-    /*TopicPartition TOPIC_PARTITION = new TopicPartition("elasticsearch-sink", 0);
-    TopicPartition TOPIC_PARTITION2 = new TopicPartition("elasticsearch-sink2", 0);
-    sink.open(new HashSet<>(Arrays.asList(TOPIC_PARTITION,TOPIC_PARTITION2)));
-    String key = "key";
-    Schema schema = createSchema();
-    Struct record = createRecord(schema);
-    Schema schema2 = createOtherSchema();
-    Struct record2 = createOtherRecord(schema2);
-
-
-    SinkRecord sinkRecord = new SinkRecord("elasticsearch-sink", 0, null, key, schema, record, 0);
-    SinkRecord sinkRecord2 = new SinkRecord("elasticsearch-sink2", 0, Schema.STRING_SCHEMA, key, schema2, record2, 0);
-    records.add(sinkRecord);
-    records.add(sinkRecord2);*/
-
     /*
-    List<String> topics=new ArrayList<>();
+        List<String> topics=new ArrayList<>();
         topics.add("test-elasticsearch-sink");
         consumer.subscribe(topics);
         consumer.assign(Arrays.asList(topicPartition));
-    HashMap<TopicPartition, Long> beginningOffsets = new HashMap<>();
-    beginningOffsets.put(topicPartition, 0L);*/
+        HashMap<TopicPartition, Long> beginningOffsets = new HashMap<>();
+        beginningOffsets.put(topicPartition, 0L);
+        consumer.assign(Arrays.asList(topicPartition));
+       consumer.seek(topicPartition,0);*/
+
         KafkaConsumer<String, String> consumer = getStringStringKafkaConsumer();
 
         try {
 
             TopicPartition topicPartition = new TopicPartition("test-elasticsearch-sink",0);
-            //consumer.assign(Arrays.asList(topicPartition));
-            //consumer.seek(topicPartition,0);
+
             List<String> topics = new ArrayList<>();
             topics.add("test-elasticsearch-sink");
             consumer.subscribe(topics);
@@ -57,7 +42,6 @@ public class KafkaElasticConnector {
                 consumer.commitSync();
                 sink.open(new HashSet<>(Arrays.asList(topicPartition)));
                 sink.put(records);
-                //consumer.com
                 sink.flush(null);
             }while(!records.isEmpty());
 
@@ -105,33 +89,4 @@ public class KafkaElasticConnector {
         }
         return records;
     }
-
-    /*private static Struct createRecord(Schema schema) {
-      Struct struct = new Struct(schema);
-      struct.put("name", "Srs");
-      struct.put("gender", "male");
-      return struct;
-    }
-
-    protected static Schema createSchema() {
-      return SchemaBuilder.struct().name("record")
-              .field("name", Schema.STRING_SCHEMA)
-              .field("gender", Schema.STRING_SCHEMA)
-              .build();
-    }
-
-    protected static Schema createOtherSchema() {
-      return SchemaBuilder.struct().name("record")
-              .field("f1", Schema.STRING_SCHEMA)
-              .build();
-    }
-
-    protected static Struct createOtherRecord(Schema schema,ConsumerRecord consumerRecord) {
-      Struct struct = new Struct(schema);
-      consumerRecord.value();
-      struct.put("age", 10);
-      return struct;
-    }
-  */
-
 }
